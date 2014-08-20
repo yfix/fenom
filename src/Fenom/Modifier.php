@@ -27,7 +27,9 @@ class Modifier
     {
         if (!is_numeric($date)) {
             $date = strtotime($date);
-            if (!$date) $date = time();
+            if (!$date) {
+                $date = time();
+            }
         }
         return strftime($format, $date);
     }
@@ -41,7 +43,9 @@ class Modifier
     {
         if (!is_numeric($date)) {
             $date = strtotime($date);
-            if (!$date) $date = time();
+            if (!$date) {
+                $date = time();
+            }
         }
         return date($format, $date);
     }
@@ -51,15 +55,18 @@ class Modifier
      *
      * @param string $text
      * @param string $type
+     * @param string $charset
      * @return string
      */
-    public static function escape($text, $type = 'html')
+    public static function escape($text, $type = 'html', $charset = 'UTF-8')
     {
         switch (strtolower($type)) {
             case "url":
                 return urlencode($text);
             case "html";
-                return htmlspecialchars($text, ENT_COMPAT, 'UTF-8');
+                return htmlspecialchars($text, ENT_COMPAT, $charset);
+            case "js":
+                return json_encode($text, 64 | 256); // JSON_UNESCAPED_SLASHES = 64, JSON_UNESCAPED_UNICODE = 256
             default:
                 return $text;
         }
@@ -100,7 +107,11 @@ class Modifier
             if (preg_match('#^(.{' . $length . '}).*?(.{' . $length . '})?$#usS', $string, $match)) {
                 if (count($match) == 3) {
                     if ($by_words) {
-                        return preg_replace('#\s.*$#usS', "", $match[1]) . $etc . preg_replace('#.*\s#usS', "", $match[2]);
+                        return preg_replace('#\s.*$#usS', "", $match[1]) . $etc . preg_replace(
+                            '#.*\s#usS',
+                            "",
+                            $match[2]
+                        );
                     } else {
                         return $match[1] . $etc . $match[2];
                     }
@@ -119,7 +130,7 @@ class Modifier
     }
 
     /**
-     * Strip spaces symbols on edge of string end multiple spaces in string
+     * Strip spaces symbols on edge of string end multiple spaces in the string
      *
      * @param string $str
      * @param bool $to_line strip line ends
@@ -129,7 +140,7 @@ class Modifier
     {
         $str = trim($str);
         if ($to_line) {
-            return preg_replace('#[\s]+#ms', ' ', $str);
+            return preg_replace('#\s+#ms', ' ', $str);
         } else {
             return preg_replace('#[ \t]{2,}#', ' ', $str);
         }
@@ -147,7 +158,7 @@ class Modifier
         } elseif (is_array($item)) {
             return count($item);
         } elseif ($item instanceof \Countable) {
-            return count($item);
+            return $item->count();
         } else {
             return 0;
         }
@@ -170,11 +181,102 @@ class Modifier
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      * @return bool
      */
     public static function isIterable($value)
     {
         return is_array($value) || ($value instanceof \Iterator);
+    }
+
+    /**
+     * Replace all occurrences of the search string with the replacement string
+     * @param string $value The string being searched and replaced on, otherwise known as the haystack.
+     * @param string $search The value being searched for, otherwise known as the needle.
+     * @param string $replace The replacement value that replaces found search
+     * @return mixed
+     */
+    public static function replace($value, $search, $replace)
+    {
+        return str_replace($search, $replace, $value);
+    }
+
+    /**
+     * @param string $value
+     * @param string $pattern
+     * @param string $replacement
+     * @return mixed
+     */
+    public static function ereplace($value, $pattern, $replacement)
+    {
+        return preg_replace($pattern, $replacement, $value);
+    }
+
+    /**
+     * @param string $string
+     * @param string $pattern
+     * @return bool
+     */
+    public static function match($string, $pattern)
+    {
+        return fnmatch($pattern, $string);
+    }
+
+    /**
+     * @param string $string
+     * @param string $pattern
+     * @return int
+     */
+    public static function ematch($string, $pattern)
+    {
+        return preg_match($pattern, $string);
+    }
+
+    /**
+     * @param string $value
+     * @param string $delimiter
+     * @return array
+     */
+    public static function split($value, $delimiter = ",")
+    {
+        if(is_string($value)) {
+            return explode($delimiter, $value);
+        } elseif(is_array($value)) {
+            return $value;
+        } else {
+            return array();
+        }
+    }
+
+    /**
+     * @param $value
+     * @param string $pattern
+     * @return array
+     */
+    public static function esplit($value, $pattern = '/,\s*/S')
+    {
+        if(is_string($value)) {
+            return preg_split($pattern, $value);
+        } elseif(is_array($value)) {
+            return $value;
+        } else {
+            return array();
+        }
+    }
+
+    /**
+     * @param $value
+     * @param string $glue
+     * @return string
+     */
+    public static function join($value, $glue = ",")
+    {
+        if(is_array($value)) {
+            return implode($glue, $value);
+        } elseif(is_string($value)) {
+            return $value;
+        } else {
+            return "";
+        }
     }
 }

@@ -1,6 +1,65 @@
 Changelog
 =========
 
+## 2.3.0 (2014-08-08)
+
+- Add tags {set} and {add}
+- Fix bug #97
+- ++Docs
+- --Bugs
+- ++Tests
+
+### 2.2.1 (2014-07-29)
+
+- ++Docs
+- --Bugs
+
+## 2.2.0 (2014-07-11)
+- Add new modifiers: match, ematch, replace, ereplace, split, esplit, join
+- ++Docs
+- ++Tests
+
+### 2.1.2 (2014-07-03)
+
+- Add test for bug #86 
+- Fix bug #90 
+- --Bugs
+- ++Tests
+
+### 2.1.1 (2014-06-30)
+
+- Fix bug #86: mismatch semicolon separator when value for foreach got from method  (by nekufa)
+
+## 2.1.0 (2014-06-29)
+
+- Check variable before using in {foreach} (#83)
+- Add tag {unset} (#80)
+- Refactory array parser
+- --Bugs
+- ++Tests
+- ++Docs
+
+### 2.0.1 (2014-06-09)
+
+- Fix string concatenation. If `~` in the end of expression Fenom generates broken template.
+- Fix `~=` operator. Operator was not working.
+- ++Tests
+- ++Docs
+
+## 2.0.0
+
+- Add tag the {filter}
+- Redesign `extends` algorithm:
+    - Blocks don't support dynamic names
+    - Blocks can't be nested
+- Add tag options support
+- Improve Fenom API
+- Move benchmark to another project
+- Internal improvements
+- Add `Fenom::STRIP` option
+- Add tags {escape} and {strip}
+- Method addProvider accept compile path which will saved the template's PHP cache. If compile path is not specified, will be taken global compile path.
+
 ### 1.4.9 (2013-04-09)
 
 - Fix #75
@@ -11,7 +70,7 @@ Changelog
 - Fix #52
 - Tests++
 
-### 1.4.7 (2013-09-19)
+### 1.4.7 (2013-09-21)
 
 - Bug fixes
 - Tests++
